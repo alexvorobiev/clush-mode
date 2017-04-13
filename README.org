@@ -1,0 +1,19 @@
+* clush-mode
+Emacs comint mode for clush.
+
+[[http://clustershell.readthedocs.io/en/latest/tools/clush.html][clush]] is a tool provided by [[https://github.com/cea-hpc/clustershell][ClusterShell]] library to execute commands
+on multple nodes in parallel via ssh. It can be used either in batch
+(the "one-shot") mode or as an interactive shell. /clush-mode/ is a
+[[https://www.emacswiki.org/emacs/ComintMode][comint]]-mode based library for running interactive /clush/ sessions in
+Emacs.
+
+** Installation
+   /clush-mode/ will eventually be availabe on Melpa.
+
+** How to use
+   - =M-x clush= will prompt for additional arguments needed to
+     establish the interactive clush session or any other clush
+     options. For instance, =-w server[1-3],server10= or =-g mynodes=.
+   - If you start with the unversal argument (=C-u=), =M-x clush= will
+     try to run =sudo root clush...=".
+
