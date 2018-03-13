@@ -15,5 +15,18 @@ Emacs.
      establish the interactive clush session or any other clush
      options. For instance, =-w server[1-3],server10= or =-g mynodes=.
    - If you start with the unversal argument (=C-u=), =M-x clush= will
-     try to run =sudo root clush...=".
+     ask a user id (the default is root) and try to run =sudo -u user
+     clush...=".
+   - A /clush-mode/ buffer can be used in /org-mode/ buffers as the
+     session property in shell code blocks:
+
+     #+begin_src org
+       ,#+begin_src emacs-lisp
+         (clush "-g group1")
+       ,#+end_src
+
+       ,#+begin_src shell :session *clush -g group1*
+         uname -a
+       ,#+end_src
+     #+end_src
 

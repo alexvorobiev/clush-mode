@@ -1,11 +1,11 @@
 ;;; clush-mode.el -- Emacs mode for interactive clush sessions. -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2017 Alex Vorobiev
+;; Copyright (C) 2017, 2018 Alex Vorobiev
 
 ;; Author: Alex Vorobiev <alexander.vorobiev@gmail.com>
 ;; URL: https://github.com/alexvorobiev/clush-mode
 ;; Package-Requires: ((emacs "24.1") (s "1.10.0") (dash "2.11.0"))
-;; Version: 1.0.0
+;; Version: 1.1.0
 ;; Keywords: comint clush clustershell ssh shell
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -32,10 +32,17 @@
 (require 'dash)
 (require 's)
 
-(defvar clush-file-path "/usr/bin/clush"
-  "Path to the program used by `clush'")
+(defgroup clush nil
+  "Comint mode for `clush' (cluster shell)"
+  :prefix "clush-"
+  :group 'processes
+  :group 'unix)
 
-;; This works for clush 1.16
+(defcustom clush-program-name "clush"
+  "*Name of `clush' executable"
+  :type 'string
+  :require 'clush)
+
 (defvar clush-arguments
   ;; Let emacs do the shell syntax highlighting
   '("--color=never"
@@ -43,13 +50,9 @@
     "--quiet"
     ;; Merge identical output from multiple servers
     "-b"
-    ;; Suppress the ssh banner
+    ;; Suppress the ssh banner among other things
     "--options=-oLogLevel=Error")
   "Command line arguments to pass to `clush'")
-
-;; todo: clush 1.17 has different options 
-;(defvar clush-arguments '("--option=\"color=never\"" " --quiet" " -b")
-
 
 (defvar clush-mode-map
   (let ((map (nconc (make-sparse-keymap) comint-mode-map)))
@@ -61,15 +64,18 @@
 (defvar clush-prompt-regexp "clush> "
   "Prompt for `clush'.")
 
-(defun clush (prefix where)
+(defun clush (where &optional user)
   "Run an inferior instance of `clush' inside Emacs."
-  (interactive "P\nsWhere: ")
-  (let* ((clush-program (if prefix
+  (interactive
+   (list (read-string "Where: " nil 'clush-hist-where)
+         (if current-prefix-arg (read-string "User: " nil 'clush-hist-user "root") nil)))
+
+  (let* ((clush-program (if user
                             "sudo"
-                          clush-file-path))
+                          clush-program-name))
          (no-root-args (cons where clush-arguments))
-         (args (if prefix
-                   (-flatten (list "-u" "root" clush-file-path no-root-args))
+         (args (if user
+                   (-flatten (list "-u" user clush-program-name no-root-args))
                  no-root-args))
          (clush-buffer-name (concat "*clush " where "*"))
          (buffer (comint-check-proc clush-buffer-name))
