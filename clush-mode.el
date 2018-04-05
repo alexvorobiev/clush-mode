@@ -1,4 +1,4 @@
-;;; clush-mode.el -- Emacs mode for interactive clush sessions. -*- lexical-binding: t; -*-
+;;; clush-mode.el --- Emacs mode for interactive clush sessions. -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2017, 2018 Alex Vorobiev
 
@@ -6,7 +6,7 @@
 ;; URL: https://github.com/alexvorobiev/clush-mode
 ;; Package-Requires: ((emacs "24.1") (s "1.10.0") (dash "2.11.0"))
 ;; Version: 1.1.0
-;; Keywords: comint clush clustershell ssh shell
+;; Keywords: comint ssh shell clush clustershell
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@
 
 ;; Comint mode for `clush'.
 ;;
-;; See documentation on https://github.com/alexvorobiev/clush-mode
+;; Documentation: https://github.com/alexvorobiev/clush-mode
 
 ;;; Code:
 
@@ -39,7 +39,7 @@
   :group 'unix)
 
 (defcustom clush-program-name "clush"
-  "*Name of `clush' executable"
+  "*Name of `clush' executable."
   :type 'string
   :require 'clush)
 
@@ -52,20 +52,23 @@
     "-b"
     ;; Suppress the ssh banner among other things
     "--options=-oLogLevel=Error")
-  "Command line arguments to pass to `clush'")
+  "Command line arguments to pass to `clush'.")
 
 (defvar clush-mode-map
   (let ((map (nconc (make-sparse-keymap) comint-mode-map)))
     ;; example definition
     (define-key map "\t" 'completion-at-point)
     map)
-  "Basic mode map for `clush'")
+  "Basic mode map for `clush'.")
 
 (defvar clush-prompt-regexp "clush> "
   "Prompt for `clush'.")
 
 (defun clush (where &optional user)
-  "Run an inferior instance of `clush' inside Emacs."
+  "Run an inferior instance of `clush' inside Emacs.
+WHERE should specify the target nodes in a form `clush'
+understands e.g. `-w host' or `-g group'. If USER is passed,
+`clush' will be called under `sudo'."
   (interactive
    (list (read-string "Where: " nil 'clush-hist-where)
          (if current-prefix-arg (read-string "User: " nil 'clush-hist-user "root") nil)))
@@ -94,7 +97,7 @@
       (clush-mode)))
 
 (defun clush--initialize ()
-  "Helper function to initialize Clush"
+  "Helper function to initialize Clush."
   (setq comint-process-echoes t)
   (setq comint-use-prompt-regexp t))
 
